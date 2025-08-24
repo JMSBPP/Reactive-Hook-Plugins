@@ -1,0 +1,15 @@
+[profile.default]
+src = "src"
+out = "foundry-out"
+libs = ["node_modules","lib"]
+solc_version = "0.8.26"
+evm_version = "cancun"
+remappings = [
+    "forge-std/=lib/forge-std/src",
+    "solmate/=lib/solmate",
+    "@uniswap/v4-periphery/=lib/v4-periphery/",
+    "@uniswap/v4-core/=lib/v4-periphery/lib/v4-core",
+    "@openzeppelin/=lib/openzeppelin-contracts/"
+]
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
