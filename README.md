@@ -2,6 +2,15 @@
 
 A sophisticated, upgradeable smart contract system that implements reactive components for DeFi hooks using the Beacon Proxy pattern and reactive callback compliance.
 
+
+## Set Up
+
+
+clone the repo and run 
+```sh
+make test-failure
+```
+
 ## 🎯 Overview
 
 The Reactive Hook Plugins system enables the creation of modular, upgradeable components that can be dynamically attached to DeFi hooks. Each component is reactive-callback compliant and can be upgraded independently, providing a flexible architecture for complex DeFi operations.

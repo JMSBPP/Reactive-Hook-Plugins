@@ -36,8 +36,9 @@ abstract contract BaseHookSubscriptionManager is Context, ImmutableState, Upgrad
     UpgradeableBeacon(address(poolKey.hooks), _msgSender())
     ImmutableState(_manager)
     
-    {
+    {               
         if (!poolKey.hooks.isValidHookAddress(poolKey.fee)) Hooks.HookAddressNotValid.selector.revertWith(address(poolKey.hooks));
+        
     }
     
 }
