@@ -19,7 +19,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {UpgradeableBeacon} from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 
 
-
+//NOTE: This is PoC ...
 abstract contract BaseHookSubscriptionManager is Context, ImmutableState, UpgradeableBeacon{
     using Address for address;
     using Hooks for IHooks;

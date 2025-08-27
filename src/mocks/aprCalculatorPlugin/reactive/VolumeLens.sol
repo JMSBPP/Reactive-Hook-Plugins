@@ -9,7 +9,7 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@uniswap/v4-core/src/types/BalanceDelta.sol";
 import {SafeCast} from "@uniswap/v4-core/src/libraries/SafeCast.sol";
-import {ILPHub} from "./interfaces/ILPHub.sol";
+import {ILPHub} from "../destination/interfaces/ILPHub.sol";
 
 contract VolumeLens is IReactive, AbstractPausableReactive{
     using SafeCast for int256;
@@ -49,7 +49,9 @@ contract VolumeLens is IReactive, AbstractPausableReactive{
     uint256 lastBlock;
     
 
-    // TODO: We can have theconstuctor receive arburtray bytes athat gover the susbcriptions
+    // TODO: We can have the 
+    // constructor receive arbitraty 
+    // bytes  such that gover the susbcriptions
 
     constructor(
         ILPHub _lpHub,
@@ -159,14 +161,13 @@ contract VolumeLens is IReactive, AbstractPausableReactive{
                         (keys[i], values[i]) = poolLpMetrics.at(i);
                     }
 
-                    bytes memory payload = abi.encodeCall(
-                        ILPHub.calculateFeesFromVolume,
-                        (
-                            abi.encode(
+                    bytes memory payload = abi.encodeWithSignature(
+                        "calculateFeesFromVolume(bytes)",
+                        address(0x00), // The reactVM address
+                        abi.encode(
                                 keys, 
                                 values
                             )
-                        )
                     );
 
                     emit Callback(
