@@ -33,3 +33,5 @@ deployments/
 keystore/
 foundry.keystore
 
+#AI Agents
+aiUtils/
