@@ -8,7 +8,9 @@ A sophisticated, upgradeable smart contract system that implements reactive comp
 
 clone the repo and run 
 ```sh
-make test-failure
+
+cast wallet import reactiveHookPlugins --interactive
+history -c && history -w  # Bash/Zsh
 ```
 
 ## 🎯 Overview

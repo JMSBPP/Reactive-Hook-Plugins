@@ -2,6 +2,7 @@
 src = "src"
 out = "foundry-out"
 libs = ["node_modules","lib"]
+ffi = true
 solc_version = "0.8.26"
 evm_version = "cancun"
 remappings = [
