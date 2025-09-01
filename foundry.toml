@@ -8,6 +8,7 @@ evm_version = "cancun"
 remappings = [
     "forge-std/=lib/forge-std/src",
     "solmate/=lib/solmate",
+    "foundry-devops/=lib/foundry-devops/src/",
     "@uniswap/v4-periphery/=lib/v4-periphery/",
     "@uniswap/v4-core/=lib/v4-periphery/lib/v4-core",
     "@openzeppelin/=lib/openzeppelin-contracts/",
@@ -16,8 +17,13 @@ remappings = [
 
 
 [rpc_endpoints]
-sepolia = "https://gateway.tenderly.co/public/sepolia"
+sepolia = "https://g.w.lavanet.xyz:443/gateway/sep1/rpc-http/0e1cfb566bd2ce33c7cb707c85397e07"
 reactive-testnet="https://lasna-rpc.rnk.dev/"
+
+
+[etherscan]
+
+sepolia = {key = "${ETHERSCAN_API_KEY}"}
 
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
