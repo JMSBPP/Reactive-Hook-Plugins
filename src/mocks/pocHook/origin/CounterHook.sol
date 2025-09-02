@@ -15,10 +15,10 @@ import {
 } from "@uniswap/v4-core/src/types/PoolId.sol";
 
 contract CounterHook is BaseHook{
-
+    using PoolIdLibrary for PoolKey;
     uint256 counter;
 
-    event Counted(uint256 indexed counter);
+    event Counted(bytes32 poolId ,uint256 indexed counter);
 
     constructor(IPoolManager _manager) BaseHook(_manager){}
 
@@ -28,7 +28,7 @@ contract CounterHook is BaseHook{
             afterInitialize:true, // Incremements the counter by 1
             beforeAddLiquidity: false,
             afterAddLiquidity: false,
-            beforeRemoveLiquidity: false,
+            beforeRemoveLiquidity: false,   
             afterRemoveLiquidity:false,
             beforeSwap:false,
             afterSwap: false,
@@ -43,11 +43,11 @@ contract CounterHook is BaseHook{
 
     function _afterInitialize(
         address,
-        PoolKey calldata,
+        PoolKey calldata poolKey,
         uint160, int24
         ) internal virtual override returns (bytes4) {
             counter++;
-            emit Counted(counter);
+            emit Counted(PoolId.unwrap(PoolKey.toId()), counter);
             return IHooks.afterInitialize.selector;
     }
 }
