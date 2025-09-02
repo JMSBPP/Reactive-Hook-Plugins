@@ -13,7 +13,6 @@ import {
     Hooks
 } from "@uniswap/v4-periphery/src/utils/BaseHook.sol";
 
-
 abstract contract ReactiveHook is AbstractCallback, BaseHook {
 
     //NOTE: Reactive contracts anre upgradable clones
@@ -44,12 +43,4 @@ abstract contract ReactiveHook is AbstractCallback, BaseHook {
 
 }
 
-
-
-
-
-
-
-
-}
 

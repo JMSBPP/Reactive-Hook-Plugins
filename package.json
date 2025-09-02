@@ -25,5 +25,8 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "hardhat": "^3.0.1"
+  },
+  "dependencies": {
+    "@1inch/limit-order-protocol": "^2.0.5"
   }
 }
