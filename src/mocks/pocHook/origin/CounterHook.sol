@@ -47,7 +47,7 @@ contract CounterHook is BaseHook{
         uint160, int24
         ) internal virtual override returns (bytes4) {
             counter++;
-            emit Counted(PoolId.unwrap(PoolKey.toId()), counter);
+            // emit Counted(PoolId.unwrap(PoolKey.toId()), counter);
             return IHooks.afterInitialize.selector;
     }
 }

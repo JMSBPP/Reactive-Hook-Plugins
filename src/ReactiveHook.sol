@@ -16,7 +16,7 @@ import {
 abstract contract ReactiveHook is AbstractCallback, BaseHook {
 
     //NOTE: Reactive contracts anre upgradable clones
-    mapping(PoolKey poolKey => IReactive[]) dataFeeds;
+    // mapping(PoolKey poolKey => IReactive[]) dataFeeds;
 
     constructor(IPoolManager _manager) BaseHook(_manager){}
 
