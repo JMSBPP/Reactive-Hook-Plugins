@@ -4,15 +4,26 @@ pragma solidity ^0.8.24;
 import {IHooks} from "@uniswap/v4-core/src/interfaces/IHooks.sol";
 import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 import {IReactive ,LogRecordLibrary} from "./LogRecordLibrary.sol";
+import {
+    PoolId,
+    PoolIdLibrary,
+    PoolKey
+} from "@uniswap/v4-core/src/types/PoolId.sol";
 
-
-
+import {Currency} from "@uniswap/v4-core/src/types/Currency.sol";
+import {SafeCast} from "@uniswap/v4-core/src/libraries/SafeCast.sol";
+ 
 library PoolManagerLogRecordLibrary{
+    using SafeCast for uint256;
+    using PoolIdLibrary for PoolKey;
     using PoolManagerLogRecordLibrary for IReactive.LogRecord;
     using LogRecordLibrary for IReactive.LogRecord;
 
 
     struct InitializeData{
+        PoolId poolId;
+        Currency currency0;
+        Currency currency1;
         uint24 fee;
         int24 tickSpacing;
         IHooks hooks;
@@ -20,9 +31,10 @@ library PoolManagerLogRecordLibrary{
         int24 tick;
     }
 
-    struct InitializeFlatData{
+    struct InitializeNonIndexedData{
         uint24 fee;
         int24 tickSpacing;
+        IHooks hooks;
         uint160 sqrtPrice;
         int24 tick;
     }
@@ -38,30 +50,43 @@ library PoolManagerLogRecordLibrary{
     function initializeData(
         IReactive.LogRecord memory poolManagerLogRecord
     ) internal view returns(InitializeData memory _initializeData){
-        _initializeData = abi.decode(
-            poolManagerLogRecord.data,
-            (InitializeData)
+        PoolId poolId = PoolId.wrap(bytes32(poolManagerLogRecord.topic_1));
+        (Currency currency0, Currency currency1) = (
+            Currency.wrap(address(uint256(poolManagerLogRecord.topic_2).toUint160())),
+            Currency.wrap(address(uint256(poolManagerLogRecord.topic_3).toUint160()))
         );
-    }
+        InitializeNonIndexedData memory _initializeNonIndexedData = abi.decode(
+            poolManagerLogRecord.data,
+            (InitializeNonIndexedData)
+        );
 
-    function hook(
-        IReactive.LogRecord memory poolManagerLogRecord
-    ) internal view returns (IHooks _hook){
-        _hook = poolManagerLogRecord.initializeData().hooks;
-    }
-
-    function initializeFlatData(
-        IReactive.LogRecord memory poolManagerLogRecord
-    ) internal view returns(InitializeFlatData memory _initializeFlatData){
-        InitializeData memory _initializeData = poolManagerLogRecord.initializeData();
-        _initializeFlatData = InitializeFlatData({
-            fee: _initializeData.fee,
-            tickSpacing: _initializeData.tickSpacing,
-            sqrtPrice: _initializeData.sqrtPrice,
-            tick: _initializeData.tick
+        _initializeData = InitializeData({
+            poolId: poolId,
+            currency0: currency0,
+            currency1: currency1,
+            fee: _initializeNonIndexedData.fee,
+            tickSpacing: _initializeNonIndexedData.tickSpacing,
+            hooks: _initializeNonIndexedData.hooks,
+            sqrtPrice: _initializeNonIndexedData.sqrtPrice,
+            tick: _initializeNonIndexedData.tick
         });
 
     }
+
+    function poolKey(
+        IReactive.LogRecord memory poolManagerLogRecord
+    ) internal view returns(PoolKey memory _poolKey){
+        InitializeData memory _initializeData = poolManagerLogRecord.initializeData();
+        _poolKey = PoolKey({
+            currency0: _initializeData.currency0,
+            currency1: _initializeData.currency1,
+            fee: _initializeData.fee,
+            tickSpacing: _initializeData.tickSpacing,
+            hooks: _initializeData.hooks
+        });
+    }
+
+
 // event ModifyLiquidity(
 //     PoolId indexed id, 
 //     address indexed sender, 
