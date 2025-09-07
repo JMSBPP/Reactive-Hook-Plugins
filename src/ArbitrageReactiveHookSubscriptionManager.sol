@@ -4,12 +4,16 @@ pragma solidity >=0.8.0;
 
 import {
     IReactive,
-    AbstractPausableReactive
+    AbstractPausableReactive,
+    ISystemContract
 } from "@reactive-network/abstract-base/AbstractPausableReactive.sol";
 
 import {PoolKey,PoolId, PoolIdLibrary} from "@uniswap/v4-core/src/types/PoolId.sol";
 import {Currency} from "@uniswap/v4-core/src/types/Currency.sol";
 import {IHooks} from "@uniswap/v4-core/src/interfaces/IHooks.sol";
+import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
+import "@uniswap/v4-core/src/types/BeforeSwapDelta.sol";
+
 
 import {
     EnumerableMap,
@@ -38,16 +42,20 @@ import {IArbitrageReactiveHookCallback} from "./interfaces/IArbitrageReactiveHoo
 
 //  * - `bytes32 -> address` (`Bytes32ToAddressMap`) since v5.1.0
 
-abstract contract ArbitrageReactiveHookSubscriptionManager is IReactive, AbstractPausableReactive{
+contract ArbitrageReactiveHookSubscriptionManager is IReactive, AbstractPausableReactive{
     using EnumerableSet for EnumerableSet.BytesSet;
     using EnumerableMap for EnumerableMap.Bytes32ToAddressMap;
     using PoolIdLibrary for PoolKey;
+    using BeforeSwapDeltaLibrary for int128;
+    using BeforeSwapDeltaLibrary for BeforeSwapDelta;
     using PoolManagerLogRecordLibrary for IReactive.LogRecord;
+
 
     // NOTE: The keys are the poolId's and the values are
     // the IHooks addresses
     struct ReactiveHookData{
-        uint256 chainId;
+        uint256 destination;
+        uint256 origin;
         PoolKey poolKey;
         EnumerableSet.BytesSet subscriptions;
     }
@@ -61,11 +69,19 @@ abstract contract ArbitrageReactiveHookSubscriptionManager is IReactive, Abstrac
     error HookRegistrationFailed();
 
 
-    constructor(PoolKey memory poolKey, uint256 chainId){
+    constructor(
+        address _service,
+        IPoolManager _poolManager,
+        PoolKey memory poolKey,
+        uint256 _destinationChainId,
+        uint256 _originChainId
+    ){
+        service = ISystemContract(payable(_service));
         reactiveHookData.poolKey = poolKey;
-        reactiveHookData.chainId = chainId;
+        reactiveHookData.destination = _destinationChainId;
+        reactiveHookData.origin = _originChainId;
+        vm = !_subscribeToPoolManager(_poolManager);
     }
-
 
 
 
@@ -94,7 +110,7 @@ abstract contract ArbitrageReactiveHookSubscriptionManager is IReactive, Abstrac
 
             bytes memory encodedSubscription =abi.encode(
                 AbstractPausableReactive.Subscription({
-                        chain_id: reactiveHookData.chainId,
+                        chain_id: reactiveHookData.origin,
                         _contract: address(hook),
                         topic_0: uint256(INITIALIZE_TOPIC_0),
                         topic_1: uint256(PoolId.unwrap(poolKey.toId())),
@@ -133,6 +149,7 @@ abstract contract ArbitrageReactiveHookSubscriptionManager is IReactive, Abstrac
                 hookToSubscribeSqrtPrice
             )
         );
+ 
 
         // emit Callback(
         //     log.chain_id,
@@ -140,8 +157,20 @@ abstract contract ArbitrageReactiveHookSubscriptionManager is IReactive, Abstrac
         // )
 
         //NOTE: Get the price of the Hook that is a portential subscription
+    }
 
-
+    function _subscribeToPoolManager(IPoolManager _poolManager) private returns(bool){
+        bytes memory subscriptionPayload = abi.encodeWithSignature(
+            "subscribe(uint256,address,uint256,uint256,uint256,uint256)",
+            reactiveHookData.origin,
+            address(_poolManager),
+            INITIALIZE_TOPIC_0,
+            REACTIVE_IGNORE,
+            REACTIVE_IGNORE,
+            REACTIVE_IGNORE
+        );
+        (bool subscriptionResponse, ) = address(service).call(subscriptionPayload);
+        return subscriptionResponse;
     }
 
 

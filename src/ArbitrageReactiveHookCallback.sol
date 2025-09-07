@@ -16,22 +16,31 @@ import {
 import {AbstractCallback} from "@reactive-network/abstract-base/AbstractCallback.sol";
 import {StateLibrary} from "@uniswap/v4-core/src/libraries/StateLibrary.sol";
 import "@uniswap/v4-core/src/test/PoolSwapTest.sol";
+import "@uniswap/v4-core/src/types/BeforeSwapDelta.sol";
 
+// PoolSwapTets -> This contract is also meant to work a a swap router
+// for arbitrage tests
 // NOTE: tHE BEAUTY OF THIS
-abstract contract ArbitrageReactiveHookCallback is IArbitrageReactiveHookCallback, BaseHook, AbstractCallback, PoolSwapTest{
+contract ArbitrageReactiveHookCallback is IArbitrageReactiveHookCallback, BaseHook, AbstractCallback{
     using PoolIdLibrary for PoolKey;
     using StateLibrary for IPoolManager;
     
 
 
+    //NOTE: This is only for testing purposes to make sure the callback is contract is receiving the message sent
+    // by the reactive network
     error PoolAlreadyInitiated();
+
+
 
     PoolKey hookPoolKey;
     bool private initialized;
 
     constructor(
+        address callbackSender,
         IPoolManager _poolManager
-    ) BaseHook(_poolManager){}
+    ) BaseHook(_poolManager) AbstractCallback(callbackSender){
+    }
 
 
     function getHookPermissions() public pure virtual override returns (Hooks.Permissions memory){
@@ -69,8 +78,10 @@ abstract contract ArbitrageReactiveHookCallback is IArbitrageReactiveHookCallbac
     }
 
 
-    function arbitrageSwap(uint160 otherPoolsqrtPriceX96) external{
-        (uint160  sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee) = poolManager.getSlot0(hookPoolKey.toId());
+    function arbitrageSwap(uint160 otherPoolsqrtPriceX96) external returns(BeforeSwapDelta){
+
+        // (uint160  sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee) = poolManager.getSlot0(hookPoolKey.toId());
+        return toBeforeSwapDelta(int128(600), int128(-300));
     }
 
 }
