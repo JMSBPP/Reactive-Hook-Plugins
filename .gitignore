@@ -1,7 +1,7 @@
 
 #cursor
-.cursor
-
+/.cursor
+/.github
 # Compiler files
 cache/
 out/
