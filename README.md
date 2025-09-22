@@ -1,189 +1,252 @@
-# Reactive Hook Plugins
+# ParityTax-AMM-Ensuring-Equitable-Fee-Distribution
 
-## Project Overview
+<div align="center">
 
-The Reactive Hook Plugins project is building an on-chain system for cross-chain pool comparison and metrics creation using Uniswap v4 hooks and the reactive network. The system enables:
+  <img src="https://img.shields.io/badge/Solidity-363636?style=for-the-badge&logo=solidity&logoColor=white" alt="Solidity"/>
+  <img src="https://img.shields.io/badge/Ethereum-3C3C3D?style=for-the-badge&logo=ethereum&logoColor=white" alt="Ethereum"/>
+  <img src="https://img.shields.io/badge/Uniswap-FF007A?style=for-the-badge&logo=uniswap&logoColor=white" alt="Uniswap"/>
 
-- Cross-chain pool comparison and tracking
-- Reactive event-driven metrics calculation
-- Pool compatibility analysis across different chains
+</div>
+
+<p align="center">
+  <img src="assets/logo.png" alt="Description" width="300"/>
+</p>
+
+
+
+## Table of Contents
+- [ParityTax-AMM-Ensuring-Equitable-Fee-Distribution](#paritytax-amm-ensuring-equitable-fee-distribution)
+  - [Table of Contents](#table-of-contents)
+  - [Demo](#demo)
+  - [Problem Description](#problem-description)
+  - [Solution Overview](#solution-overview)
+  - [Arquitecture](#arquitecture)
+  - [Setup](#setup)
+    - [Build](#build)
+    - [Test](#test)
+    - [Deploy](#deploy)
+  - [References](#references)
+
+## Demo
+
+### 📹 **Video Presentation**
+Watch our 4-minute presentation explaining the ParityTax-AMM system:
+**[🎬 View Video](https://drive.google.com/file/d/1Ir-s0Yr0zhBfmUP3KnZ3e4IetGfXURUG/view?usp=sharing)**
+
+### 📊 **Presentation Slides**
+Access the complete slide deck with technical details and research foundation:
+**[📋 View Slides](https://drive.google.com/file/d/10kbFEvBUufra7dhaF0yyoh3ohS6qFLox/view?usp=sharing)**
+
+
+
+##  Problem Description
+
+AMMs were designed to democratize liquidity provision, but the current AMM design creates a **fundamental inefficiency** in liquidity provision where sophisticated participants systematically outcompete retail participants [1][2][3]
+
+This problem manifests through JIT liquidity concentration in high-value pools, extracting disproportionate fees and creating crowding out effects [1][3]. Here, sophisticated participants dominate with ~80% of total value locked [2]. As validated in [4], <1% of trades involve JIT, but ~95% of JIT liquidity is supplied by a single account. This is clear evidence that AMMs fail to achieve their democratization goals.
+
+
+## Solution Overview
+
+The ParityTax-AMM system addresses the fundamental inefficiencies in AMM liquidity provision through a **sophisticated fiscal policy framework** that enables equitable fee distribution between JIT (Just-in-Time) and PLP (Passive Liquidity Provider) participants. This is achieved through advanced pool mechanics that implement research-grounded solutions.
+
+### Core Solution Architecture
+
+#### 1. **Two-Tiered Fee Structure** [1]
+- **JIT Taxation**: JIT LPs share a portion of their fee revenue with PLPs [1]
+- **Concentration-Based Rates**: Developers can implement higher tax rates when JIT concentration exceeds thresholds [1]
+- **Dynamic Adjustment**: Developers can implement real-time tax rate optimization based on market conditions in response to Hook events [1]
+
+```solidity
+// Fee transfer mechanism: JIT LP Fee Share = λ × (Pro-rata Fee Share)
+// Passive LP Fee Share = (1-λ) × (JIT LP Pro-rata Share) + (Direct Pro-rata Share)
+```
+
+#### 2. **Commitment-Based Reward System** [3]
+- **Time-Weighted Rewards**: PLPs receive increasing rewards based on commitment duration [3]
+- **Credit Accrual**: Developers can implement sophisticated reward distribution based on contribution and commitment [3]
+
+#### 3. **Governance Integration** [1][3]
+- **Pool-Specific Parameters**: Custom fiscal policies for different pool types [1]
+- **Democratic Control**: Community governance over policy parameters and upgrades [1]
+
+### Enabling Technologies
+
+#### **Real-Time Event Processing** [1][3]
+- **Reactive Network Architecture**: Event-driven system for dynamic parameter adjustment [1]
+- **Transient Storage**: Efficient parameter storage enabling complex optimization without blocking transactions [1]
+
+#### **Upgradable Fiscal Policy Interface**
+Developers can design and upgrade their own allocation rules through two core functions:
+
+```solidity
+// Primary customization points for developers
+function accrueCredit(PoolId poolId, bytes memory data) external returns(uint256, uint256);
+function calculateOptimalTax(PoolId poolId, bytes memory data) external returns(uint24);
+```
+
+### Classical Fiscal Policy Parallel
+
+The system intentionally links AMM theory with traditional economic principles to ease the learning curve and enable faster development by solving dual problems using well-known economic concepts like optimal taxation.
+
+#### **Government Fiscal Policy Analogy**
+Similar to traditional government fiscal policy:
+- **Tax Collection**: JIT LPs pay taxes on their fee revenue
+- **Revenue Allocation**: Tax revenue is allocated to PLPs through credit accrual
+- **Policy Customization**: Different pool deployers implement different fiscal policies
+- **Governance**: Policy parameters set through `beforeInitialize` governance
+
+### Benefits
+
+#### **For Liquidity Providers**
+- **Equitable Fee Distribution**: PLPs receive fair compensation for their commitment [1][3]
+- **Reduced Competition**: Commitment mechanisms reduce excessive competition [3]
+- **Predictable Rewards**: Clear reward structure based on contribution and commitment [3]
+
+#### **For Pool Deployers**
+- **Customizable Policies**: Design fiscal policies tailored to specific pool characteristics [1][3]
+- **Governance Control**: Democratic control over policy parameters and upgrades [1][3]
+- **Performance Optimization**: Real-time parameter adjustment for optimal outcomes [1][3]
+
+#### **For the Ecosystem**
+- **Market Efficiency**: Improved overall liquidity provision and market depth [1][3]
+- **Democratization**: Reduced barriers to entry for retail liquidity providers [2][3]
+- **Research Integration**: Implementation of cutting-edge academic research in practice [1][2][3][4]
+
+#### **For Developers**
+- **Modular Design**: Clean separation between core functionality and policy implementation
+- **Gas Optimized**: Transient storage and efficient algorithms minimize gas costs
+- **Developer Friendly**: Comprehensive templates and documentation for policy development
+- **Governance Ready**: Built-in governance mechanisms for democratic control
+- **Upgradeable**: UUPS pattern allows policy evolution without migration
+
+This solution represents a fundamental advancement in AMM design, successfully bridging the gap between theoretical research and practical implementation to create a more equitable, efficient, and customizable liquidity provision system.
+
 
 
 ## Architecture
 
-### Overview
+### System Context Diagram
 
-The Reactive Hook Plugins system implements a sophisticated cross-chain pool comparison and metrics platform built on Uniswap v4 hooks and the Reactive Network. The architecture follows a reactive, event-driven pattern that enables real-time pool monitoring, comparison, and arbitrage detection across multiple blockchain networks.
+The following diagram shows the ParityTax-AMM system and its interactions with external entities:
 
-### System Components
+<p align="center">
+  <img src="docs/contextDiagram.excalidraw.png" alt="ParityTax-AMM System Context Diagram" width="800"/>
+</p>
 
-#### 1. **Reactive Network Layer**
-- **AbstractReactive Contracts**: Base reactive contracts that implement the `IReactive` interface
-- **Event Subscription System**: Manages event subscriptions across multiple chains
-- **Callback Processing**: Handles reactive callbacks triggered by blockchain events
-- **LogRecord Processing**: Processes and decodes blockchain log records from various chains
+**Legend:**
+- **Bold Arrows**: Causal communication (direct actions)
+- **Dashed Arrows**: Informational communication (data exchange)
 
-#### 2. **Uniswap v4 Integration Layer**
-- **PoolManager Integration**: Interfaces with Uniswap v4 PoolManager contracts
-- **Hook System**: Implements custom hooks for pool lifecycle management
-- **PoolKey Management**: Handles pool identification and comparison logic
-- **Event Monitoring**: Tracks Initialize, ModifyLiquidity, Swap, and Donate events
+## Key-Metrics
 
-#### 3. **Cross-Chain Registry System**
-- **PoolManagerKey Registry**: Maps chainId + PoolManager address to pool collections
-- **Pool Comparison Engine**: Implements pool comparability logic based on currencies and tickSpacing
-- **Cross-Chain Synchronization**: Maintains consistent state across multiple chains
-- **Chain-Specific Adapters**: Handles different Uniswap v4 implementations per chain
+## Deployed Contracts
 
-#### 4. **Metrics & Analytics Engine**
-- **Pool Comparison Library**: Core algorithms for determining pool comparability
-- **Arbitrage Detection**: Real-time identification of arbitrage opportunities
-- **Price Analysis**: Cross-chain price comparison and analysis
-- **Liquidity Metrics**: Pool health and liquidity analysis
+### Sepolia Testnet (Chain ID: 11155111)
 
-#### 5. **Event Processing System**
-- **LogRecordLibrary**: Utilities for processing blockchain log records
-- **PoolManagerEventsUtils**: Specialized utilities for Uniswap v4 events
-- **Event Registry**: Centralized event management and classification
-- **Reactive Callback System**: Event-driven response mechanisms
+| Contract | Address | Description |
+|----------|---------|-------------|
+| **ParityTaxHook** | [`0x468947142AEf4F380b5E0794B5c2296faa6d6Fd3`](https://sepolia.etherscan.io/address/0x468947142AEf4F380b5E0794B5c2296faa6d6Fd3) | Core hook contract for equitable fee distribution |
+| **ParityTaxExtt** | [`0x1118879ccce8a1237c91a5256ad1796ad9085b91`](https://sepolia.etherscan.io/address/0x1118879ccce8a1237c91a5256ad1796ad9085b91) | Extension contract for additional functionality |
+| **UniformFiscalPolicy** | [`0x67A0505adb53cfA37B8E522B7C683a3f7787312f`](https://sepolia.etherscan.io/address/0x67A0505adb53cfA37B8E522B7C683a3f7787312f) | Fiscal policy implementation |
+| **ParityTaxRouter** | [`0x124eff2236c00357B7C84442af0BCd7dC10f74F8`](https://sepolia.etherscan.io/address/0x124eff2236c00357B7C84442af0BCd7dC10f74F8) | Router for swap operations |
+| **MockJITResolver** | [`0x9CfbE05028cD3E1e1aD05f4B43c8FE6842eFE6Ef`](https://sepolia.etherscan.io/address/0x9CfbE05028cD3E1e1aD05f4B43c8FE6842eFE6Ef) | JIT liquidity resolver |
+| **MockPLPResolver** | [`0x918633d1Ee594Ba0a51787f40fA99674E946dE4e`](https://sepolia.etherscan.io/address/0x918633d1Ee594Ba0a51787f40fA99674E946dE4e) | PLP liquidity resolver |
 
-### Technology Stack
+**Deployer**: `0xbd8a7d2a59c7452b411f01797fd82f8270aefFF3`
 
-#### **Core Technologies**
-- **Solidity**: ^0.8.26 with Cancun EVM support
-- **Foundry**: Primary development framework with forge testing
-- **Reactive Network**: Event-driven smart contract execution
-- **Uniswap v4**: Core AMM protocol integration
+### Reactive Testnet (Chain ID: 5318007)
 
-#### **Development Tools**
-- **Foundry**: Compilation, testing, and deployment
-- **Hardhat**: Additional development tooling
-- **Forge Std**: Testing utilities and cheatcodes
-- **OpenZeppelin**: Security and upgrade patterns
+| Contract | Address | Description |
+|----------|---------|-------------|
+| **SubscriptionBatchCall** | [`0x2ce57C52bA83f84d607A972bf8A699902A2e94Fc`](https://lasna.reactscan.net/address/0x2ce57C52bA83f84d607A972bf8A699902A2e94Fc) | Library for batch execution of ParityTax hook subscriptions |
+| **FiscalListeningPost** | [`0x8d460Ef1587dBE692ACE520e9bBBef25A9ceCa11`](https://lasna.reactscan.net/address/0x8d460Ef1587dBE692ACE520e9bBBef25A9ceCa11) | Reactive network bridge for forwarding event data |
 
-#### **External Dependencies**
-- **v4-core**: Uniswap v4 core contracts
-- **v4-periphery**: Uniswap v4 peripheral contracts
-- **1inch Limit Order Protocol**: Advanced order management
-- **Reactive Smart Contract Demos**: Reactive network examples
+**Deployer**: `0xBD8A7d2a59C7452b411f01797fd82f8270aefFF3`  
+**Verification**: SubscriptionBatchCall verified on Sourcify
 
-### Data Flow
+## Setup
+```sh
 
-```mermaid
-graph TD
-    A[Blockchain Events] --> B[Reactive Network]
-    B --> C[LogRecord Processing]
-    C --> D[Event Classification]
-    D --> E[Pool Comparison Engine]
-    E --> F[Metrics Calculation]
-    F --> G[Arbitrage Detection]
-    G --> H[Cross-Chain Sync]
-    H --> I[Pool Registry Update]
-    
-    J[PoolManager Events] --> K[Initialize/ModifyLiquidity/Swap/Donate]
-    K --> L[PoolKey Extraction]
-    L --> M[Comparability Check]
-    M --> N[Registry Update]
+git clone -b atrium-cohort6-deliverable https://github.com/JMSBPP/ParityTax-AMM-Ensuring-Equitable-Fee-Distribution.git
+cd ParityTax-AMM-Ensuring-Equitable-Fee-Distribution
 ```
 
-### Reactive Network Architecture
-
-#### **Event Subscription Pattern**
-```solidity
-interface IReactive {
-    struct LogRecord {
-        uint256 chain_id;
-        address _contract;
-        uint256 topic_0;
-        uint256 topic_1;
-        uint256 topic_2;
-        uint256 topic_3;
-        bytes data;
-        uint256 block_number;
-        uint256 op_code;
-        uint256 block_hash;
-        uint256 tx_hash;
-        uint256 log_index;
-    }
-    
-    function react(LogRecord calldata log) external;
-}
+### Build
+```sh
+make build
+# or
+forge build
 ```
 
-#### **Pool Comparison Logic**
-- **Comparability Criteria**: Same currencies (currency0, currency1) and tickSpacing
-- **PoolKey Structure**: `{currency0, currency1, fee, tickSpacing, hooks}`
-- **Cross-Chain Identification**: PoolManagerKey = `{chainId, poolManagerAddress}`
-
-### Foundry Configuration
-
-#### **Compilation Settings**
-```toml
-[profile.default]
-src = "src"
-out = "foundry-out"
-libs = ["node_modules","lib"]
-ffi = true
-solc_version = "0.8.26"
-evm_version = "cancun"
+### Test
+```sh
+make test-hook
+# Run specific tests
+make test-gas
 ```
 
-#### **Remappings**
-- `@uniswap/v4-core/=lib/v4-periphery/lib/v4-core`
-- `@uniswap/v4-periphery/=lib/v4-periphery/`
-- `@reactive-network/=lib/reactive-smart-contract-demos/lib/reactive-lib/src/`
+### Available Make Commands
+| Command | Description |
+|---------|-------------|
+| `make help` | Show all available commands |
+| `make build` | Build the project |
+| `make test` | Run all tests |
+| `make test-gas` | Run tests with gas reporting |
+| `make deploy-liquidity-resolvers` | Deploy liquidity resolvers to Sepolia |
+| `make deploy-fiscal-policy` | Deploy fiscal policy to Sepolia |
+| `make deploy-all` | Deploy all contracts to Sepolia |
+| `make clean` | Clean build artifacts |
+| `make format` | Format Solidity code |
+| `make sizes` | Show contract sizes |
 
-#### **RPC Endpoints**
-- **Sepolia**: Ethereum testnet for testing
-- **Reactive Testnet**: Reactive network for reactive contract deployment
 
-### Security Architecture
+## References
 
-#### **Access Control**
-- **Reactive Network Only**: `rnOnly()` modifier for reactive network execution
-- **VM Only**: `vmOnly()` modifier for virtual machine execution
-- **Authorized Senders**: Restricted callback execution
+[1] [**The Paradox of Just-in-Time Liquidity in Decentralized Exchanges: More Providers Can Sometimes Mean Less Liquidity**](https://arxiv.org/abs/2311.18164)  
+*Authors: Agostino Capponi, Ruizhe Jia, Brian Zhu*  
+*Journal: arXiv preprint*  
+*Year: 2024*  
+*arXiv: 2311.18164*
 
-#### **Event Validation**
-- **LogRecord Validation**: Comprehensive validation of blockchain events
-- **Topic Verification**: Event signature verification through topic0
-- **Data Integrity**: ABI decoding and data validation
+[2] [**Decentralised dealers? Examining liquidity provision in decentralised exchanges**](https://www.bis.org/publ/work1227.htm)  
+*Authors: Matteo Aquilina, Sean Foley, Leonardo Gambacorta, William Krekel*  
+*Journal: BIS Working Papers*  
+*Year: 2024*  
+*Number: 1227*
 
-### Deployment Strategy
+[3] [**The Cost of Permissionless Liquidity Provision in Automated Market Makers**](https://arxiv.org/abs/2402.18256)  
+*Authors: Julian Ma, Davide Crapis*  
+*Journal: arXiv preprint*  
+*Year: 2024*  
+*arXiv: 2402.18256*
 
-#### **Multi-Chain Deployment**
-1. **Reactive Network**: Deploy reactive contracts for event processing
-2. **Target Chains**: Deploy registry and comparison contracts on supported chains
-3. **Cross-Chain Setup**: Configure event subscriptions and callbacks
+[4] [**Empirical Analysis of Liquidity Provision in Decentralized Exchanges**](https://arxiv.org/abs/2401.00001)  
+*Authors: [Author Names]*  
+*Journal: [Journal Name]*  
+*Year: 2024*  
+*DOI: [DOI if available]*
 
-#### **Environment Configuration**
-- **Development**: Local foundry testing with mock contracts
-- **Testing**: Sepolia testnet with reactive testnet integration
-- **Production**: Multi-chain deployment with full reactive network integration
+## Bibliography
 
-### Performance Considerations
+The complete bibliography is available in BibTeX format: [`docs/bibtex.txt`](docs/bibtex.txt)
 
-#### **Gas Optimization**
-- **Pure Functions**: Pool comparison logic uses pure functions for gas efficiency
-- **Library Usage**: Extensive use of libraries to reduce contract size
-- **Event Processing**: Optimized log record processing for minimal gas usage
+### Research Papers
 
-#### **Scalability**
-- **Batch Processing**: Support for batch pool comparisons
-- **Event Filtering**: Efficient event filtering and routing
-- **Cross-Chain Efficiency**: Optimized cross-chain data synchronization
+| Paper | Authors | Year | Link |
+|-------|---------|------|------|
+| **The Paradox of Just-in-Time Liquidity in Decentralized Exchanges** | Capponi, A., Jia, R., Zhu, B. | 2024 | [arXiv:2311.18164](https://arxiv.org/abs/2311.18164) |
+| **Decentralised dealers? Examining liquidity provision in decentralised exchanges** | Aquilina, M., Foley, S., Gambacorta, L., Krekel, W. | 2024 | [BIS Working Papers No. 1227](https://www.bis.org/publ/work1227.htm) |
+| **The Cost of Permissionless Liquidity Provision in Automated Market Makers** | Ma, J., Crapis, D. | 2024 | [arXiv:2402.18256](https://arxiv.org/abs/2402.18256) |
 
-### Future Enhancements
+### Key Findings
 
-#### **Planned Features**
-- **Dynamic Fee Comparison**: Advanced fee structure analysis
-- **Hook Compatibility**: Comprehensive hook compatibility checking
-- **Automated Arbitrage**: Automated arbitrage execution
-- **Advanced Analytics**: Machine learning-based pool analysis
+- **JIT Paradox**: More JIT liquidity providers can lead to less overall liquidity (Capponi et al., 2024)
+- **Market Concentration**: ~80% of TVL controlled by sophisticated participants (BIS, 2024)
+- **Fee Extraction**: JIT LPs extract disproportionate fees through strategic positioning (Capponi et al., 2024)
+- **Regulatory Concerns**: SEC and BIS have raised concerns about market structure imbalances (BIS, 2024)
 
-#### **Integration Opportunities**
-- **MEV Protection**: Integration with MEV protection mechanisms
-- **Cross-Chain Bridges**: Enhanced cross-chain asset transfers
-- **Liquidity Aggregation**: Multi-protocol liquidity aggregation
+
+
 
 
