@@ -5,13 +5,56 @@ pragma solidity ^0.8.0;
 import {AbstractCallback} from "@reactive-network/abstract-base/AbstractCallback.sol";
 import {BaseHook} from "@uniswap/v4-periphery/src/utils/BaseHook.sol";
 import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
-
+import {EventMapper} from "../helpers/EventMapper.sol";
+import {EventKey, EventKeyLibrary} from "../types/EventKey.sol";
+import {UpgradeableBeacon} from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import {IReactiveHooks} from "../interfaces/IReactiveHooks.sol";
+import {ReactivePluginFactory} from "../ReactivePluginFactory.sol";
+import {IReactivePlugin} from "../interfaces/IReactivePlugin.sol";
 // TODO: This aims to be:
 // - governances reole based
 // - It needs to  
-abstract contract ReactiveHookBase is AbstractCallback, BaseHook {
-    constructor(address _callback_sender, IPoolManager _manager) AbstractCallback(_callback_sender) BaseHook(_manager) {}
 
+// This is a Beacon becuase is one implementation that deploys and manages multiple ReactivePlugins
+// which aime to be minimal and upgradable
+
+abstract contract ReactiveHookBase is IReactiveHooks, AbstractCallback, BaseHook, EventMapper, UpgradeableBeacon {
+    using EventKeyLibrary for EventKey;
+
+    ReactivePluginFactory public immutable REACTIVE_PLUGIN_FACTORY;
+    
+    constructor(
+        address _callback_sender,
+        IPoolManager _manager
+    ) AbstractCallback(_callback_sender) BaseHook(_manager) {
+        REACTIVE_PLUGIN_FACTORY = new ReactivePluginFactory(this);
+    }
+    
+
+
+
+    function deployReactivePlugin(
+        uint256 chainId,
+        address originContract,
+        bytes4 eventSelector,
+        bytes memory data
+    ) external returns(IReactivePlugin) {
+        EventKey eventKey = EventKeyLibrary.toEventKey(chainId, originContract, eventSelector);
+        bytes memory _data = _deployReactivePlugin(eventKey, data);
+        return REACTIVE_PLUGIN_FACTORY.createReactivePlugin(_data);
+    }
+
+
+    function _deployReactivePlugin(
+        EventKey eventKey,
+        bytes memory data
+    ) internal virtual returns(bytes memory _data) {
+    
+    }
+    
+    
+
+    
     fallback() external payable {
         // TODO: This is the entry point for all 
         // Reactive plugin calls, as it uses the fallbackl extention patter to delegate the 

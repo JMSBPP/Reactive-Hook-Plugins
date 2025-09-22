@@ -29,21 +29,21 @@ import {
 //     uint256 log_index;
 // }
 
-// Now for each log-record we have a mapping between topic_0 and an array of bytes
-// This array of bytes either encode function calls with **args from the topic_i i>0 or decoded data from the
-// _data field on the log record**.
 
-// >> This last part is on **.** because we need a handler to determine how each topic_0 defines args
-// subject to the function signature of the function to call
 
 // encoded function call is: contract | call | args, this means that the reactive hook needs to decode the function call and call the function with the args
 // and how is the storage for the contract to call? (transient, permanent)
 // At a first glance it seens like if the call is causal is transient, but if it requires statet changes or informational, it can be time for a persistant storage on
 // the hook side
 
-interface IReactiveHookSomething {
+interface IReactivePluginFactory {
 
-
+      
+    function createReactivePlugin(
+        bytes memory data
+    )external returns(IReactivePlugin);    
+    
     // TODO: This removes the plugin from the hook; thus this reactive component no longer governs any of the hook data, or behavior
+    
     function removePlugin(IReactivePlugin plugin) external;
 }

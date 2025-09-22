@@ -14,9 +14,7 @@
 </p>
 
 
-
 ## Table of Contents
-- [Reactive Hook Plugins](#Reactive Hook Plugins)
   - [Table of Contents](#table-of-contents)
   - [Demo](#demo)
   - [Problem Description](#problem-description)
