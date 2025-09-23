@@ -3,7 +3,6 @@
 pragma solidity ^0.8.0;
 
 /// @title A helper contract for executing boolean functions on arbitrary target call results
-/// Taken from 1inch/limit-order-protocol
 contract PredicateHelper {
     error ArbitraryStaticCallFailed();
 
