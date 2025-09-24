@@ -17,20 +17,18 @@ import {Calldata} from "../types/Calldata.sol";
 // - It needs to  
 
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 // This is a Beacon becuase is one implementation that deploys and manages multiple ReactivePlugins
 // which aime to be minimal and upgradable
 
-abstract contract ReactiveHookBase is IReactiveHooks, AbstractCallback, BaseHook, UpgradeableBeacon {
+abstract contract ReactiveHookBase is IReactiveHooks, AbstractCallback, BaseHook {
     using EnumerableSet for EnumerableSet.AddressSet;
+    using EventKeyLibrary for EventKey;
+    using Address for address;
 
 
-    EnumerableSet.AddressSet private _extensions;
 
-    struct Extension{
-        address executor;
-        EventKey eventKey;
-        EventData eventData;
-    }
+
 
 
     ReactivePluginFactory public immutable REACTIVE_PLUGIN_FACTORY;
@@ -48,20 +46,26 @@ abstract contract ReactiveHookBase is IReactiveHooks, AbstractCallback, BaseHook
         uint256 chainId,
         address executor,
         address originContract,
+        uint256 topic0,
         EventData memory eventData
     ) external {
-        EventKey eventKey = EventKeyLibrary.toEventKey(chainId, originContract, uint256(eventSelector));
-        Extension memory extension = Extension(executor, eventKey, eventData);
+        EventKey eventKey = EventKeyLibrary.toEventKey(chainId, originContract, topic0);
 
-        Calldata memory callData = _setExtension(extension);
-        _extensions.add(executor);
-        emit RequestReactivePlugin(this, eventKey, eventData, callData);
+        Calldata memory callData = _setCallData();
+        emit RequestReactivePlugin(
+            eventKey.chainId(),
+            eventKey.contractAddress(),
+            eventKey.topic0(),
+            eventData.topic1,
+            eventData.topic2,
+            eventData.topic3,
+            eventData.data,
+            callData
+        );
     }
 
 
-    function _setExtension(
-        Extension memory extension
-    ) internal virtual returns(Calldata memory) {
+    function _setCallData( ) internal virtual returns(Calldata memory) {
     
     }
     
@@ -73,12 +77,8 @@ abstract contract ReactiveHookBase is IReactiveHooks, AbstractCallback, BaseHook
         // Reactive plugin calls, as it uses the fallbackl extention patter to delegate the 
         // call to the entity that needs to handle the call 
         // TODO: This needs to be protected so is only callable by ReactivePlugin's related workflows
-        Calldata memory callData = abi.decode(msg.data, (Calldata));
-        address executor = _extensions.contains(callData.executor);
-        if (executor == address(0x00)) {
-            revert ExtensionNotRegistered(callData.executor);
-        }
-        executor.functionCall(callData.callData);
+        Calldata memory _callData = abi.decode(msg.data, (Calldata));
+        _callData.executor.functionCall(_callData.callData);
     }
 }
 

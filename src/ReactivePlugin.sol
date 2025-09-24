@@ -22,16 +22,18 @@ import {PredicateHelper} from "./helpers/PredicateHelper.sol";
 // this means a call to a function with 0 args is 24 bytes
 
 
-contract ReactivePlugin is IReactivePlugin, AbstractReactive, BeaconProxy, PredicateHelper {
+contract ReactivePlugin is IReactivePlugin, AbstractReactive, PredicateHelper {
     using EventKeyLibrary for EventKey;
 
-//keccach("GAS_LIMIT")
-    bytes32 constant internal _GAS_LIMIT_SLOT = 0x96b0c8ad3e900a7b6d91877104d0239a0a4cf3596bfa1dd265a801c5e293d83e;
+    //keccach("GAS_LIMIT")
+    bytes32 constant internal GAS_LIMIT_SLOT = 0x96b0c8ad3e900a7b6d91877104d0239a0a4cf3596bfa1dd265a801c5e293d83e;
     uint64 public immutable CALLBACK_GAS_LIMIT = uint64(0xf4240); // 1000000 gas
     
+
+    IReactiveHooks public immutable REACTIVE_HOOK;
     EventKey public immutable EVENT_KEY;
-    EventData public immutable EVENT_DATA;
-    Calldata public immutable CALLDATA;
+    EventData public EVENT_DATA;
+    Calldata public CALLDATA;
     
     
     
@@ -47,7 +49,8 @@ contract ReactivePlugin is IReactivePlugin, AbstractReactive, BeaconProxy, Predi
         EventKey eventKey,
         EventData memory eventData,
         Calldata memory _callData
-    ) InvalidCalldata(_callData.callData) BeaconProxy(address(reactiveHook), _callData.callData) {
+    ) InvalidCalldata(_callData.callData) {
+        REACTIVE_HOOK = reactiveHook;
         EVENT_DATA = eventData;
         CALLDATA = _callData;
         EVENT_KEY = eventKey;
@@ -56,10 +59,10 @@ contract ReactivePlugin is IReactivePlugin, AbstractReactive, BeaconProxy, Predi
             service.subscribe(
                 EVENT_KEY.chainId(),
                 EVENT_KEY.contractAddress(),
-                uint256(EVENT_KEY.eventSelector()),
-                eventData.topic1 != uint256(0x00) ? eventData.topic1 : REACTIVE_IGNORE,
-                eventData.topic2 != uint256(0x00) ? eventData.topic2 : REACTIVE_IGNORE,
-                eventData.topic3 != uint256(0x00) ? eventData.topic3 : REACTIVE_IGNORE
+                EVENT_KEY.topic0(),
+                REACTIVE_IGNORE,
+                REACTIVE_IGNORE,
+                REACTIVE_IGNORE
             );
         }
 
@@ -75,9 +78,9 @@ contract ReactivePlugin is IReactivePlugin, AbstractReactive, BeaconProxy, Predi
         ) 
         {
 
-            bytes memory payload = abi.encode(CALLDATA.receiver, CALLDATA.callData);
-            uint64 gasLimit = bytes32(0x00) != getGasLimit() ? uint64(uint256(getGasLimit())) : CALLBACK_GAS_LIMIT;
-            emit Callback(log.chain_id, _implementation(), gasLimit, payload);
+            bytes memory payload = abi.encode(CALLDATA.executor, CALLDATA.callData);
+            uint64 gasLimit = bytes32(0x00) != _getGasLimit() ? uint64(uint256(_getGasLimit())) : CALLBACK_GAS_LIMIT;
+            emit Callback(log.chain_id, address(REACTIVE_HOOK), gasLimit, payload);
         }
     }
 
@@ -89,6 +92,10 @@ contract ReactivePlugin is IReactivePlugin, AbstractReactive, BeaconProxy, Predi
     }
 
     function getGasLimit() external view returns(bytes32) {
+        return _getGasLimit();
+    }
+
+    function _getGasLimit() internal view returns(bytes32) {
         assembly {
             mstore(0x00, tload(GAS_LIMIT_SLOT))
             return(0x00, 0x20)

@@ -25,3 +25,6 @@
 [submodule "lib/Non-Locking-FlashLoan"]
 	path = lib/Non-Locking-FlashLoan
 	url = https://github.com/Maniveer007/Non-Locking-FlashLoan
+[submodule "lib/universal-router"]
+	path = lib/universal-router
+	url = https://github.com/Uniswap/universal-router
