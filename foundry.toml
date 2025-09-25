@@ -11,16 +11,18 @@ remappings = [
     "foundry-devops/=lib/foundry-devops/src/",
     "@uniswap/v4-periphery/=lib/v4-periphery/",
     "@uniswap/v4-core/=lib/v4-periphery/lib/v4-core/",
+    "@uniswap/universal-router/=lib/universal-router/contracts/",
     "@openzeppelin/=lib/openzeppelin-contracts/",
     "@reactive-network/=lib/reactive-smart-contract-demos/lib/reactive-lib/src/",
-    "@1inch-limit-order/=lib/limit-order-protocol/contracts/"
+    "@1inch-limit-order/=lib/limit-order-protocol/contracts/",
+    "@Cyfrin/foundry-devops/=lib/foundry-devops/src/"
 ]
 
 
 [rpc_endpoints]
-sepolia = "https://g.w.lavanet.xyz:443/gateway/sep1/rpc-http/0e1cfb566bd2ce33c7cb707c85397e07"
-reactive-testnet="https://lasna-rpc.rnk.dev/"
 
+sepolia = "https://g.w.lavanet.xyz:443/gateway/sep1/rpc-http/0e1cfb566bd2ce33c7cb707c85397e07"
+reactive-testnet = "https://lasna-rpc.rnk.dev/"
 
 [etherscan]
 

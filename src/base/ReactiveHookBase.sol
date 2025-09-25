@@ -27,10 +27,6 @@ abstract contract ReactiveHookBase is IReactiveHooks, AbstractCallback, BaseHook
     using Address for address;
 
 
-
-
-
-
     ReactivePluginFactory public immutable REACTIVE_PLUGIN_FACTORY;
     
     constructor(
