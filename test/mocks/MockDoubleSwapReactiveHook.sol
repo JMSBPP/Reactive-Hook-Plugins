@@ -30,7 +30,6 @@ contract MockDoubleSwapReactiveHook is  ReactiveHookBase {
 
     uint256 DEFAULT_DEADLINE = block.timestamp + 1;
 
-    PoolKey public poolKey;
     IUniversalRouter public swapRouter;
     
     constructor(
